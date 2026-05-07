@@ -1,0 +1,19 @@
+app/page.tsx
+  s_efa9bbf096fb45::t_0df45b87aeedaf 97
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.1",
+  "base_commit_sha": "e61b95952b412a3d3bc1bd5b26bb1021a7933420",
+  "prompts": {},
+  "sessions": {
+    "s_efa9bbf096fb45": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e00fb-f987-77f3-86b7-86ef6426fc1a",
+        "model": "gpt-5.5"
+      },
+      "human_author": "locdp <locdp@teanis.vn>"
+    }
+  }
+}
