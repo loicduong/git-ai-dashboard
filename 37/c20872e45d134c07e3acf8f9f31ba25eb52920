@@ -1,0 +1,28 @@
+components/kpi-card.tsx
+  s_2fda0697ca6e4c::t_6fef28f8215ab2 1-48
+components/metric-line-chart.tsx
+  s_2fda0697ca6e4c::t_6fef28f8215ab2 1-99
+components/range-filter.tsx
+  s_2fda0697ca6e4c::t_6fef28f8215ab2 1-51
+components/app-shell.tsx
+  s_2fda0697ca6e4c::t_6fef28f8215ab2 1-73,75-89
+  s_2fda0697ca6e4c::t_670759759735a2 74
+components/data-table.tsx
+  s_2fda0697ca6e4c::t_6fef28f8215ab2 1-84
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.1",
+  "base_commit_sha": "37c20872e45d134c07e3acf8f9f31ba25eb52920",
+  "prompts": {},
+  "sessions": {
+    "s_2fda0697ca6e4c": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e00ec-1b11-78b2-943c-42857ffbe2c2",
+        "model": "gpt-5.5"
+      },
+      "human_author": "locdp <locdp@teanis.vn>"
+    }
+  }
+}
