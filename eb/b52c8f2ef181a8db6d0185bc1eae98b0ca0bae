@@ -1,0 +1,19 @@
+lib/git-ai/metrics.ts
+  s_6132de0ca58b36::t_a33be8cfa9c25c 1,12-13,31,33,70
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.1",
+  "base_commit_sha": "ebb52c8f2ef181a8db6d0185bc1eae98b0ca0bae",
+  "prompts": {},
+  "sessions": {
+    "s_6132de0ca58b36": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e00b4-bb2e-7363-b059-c78daa24becc",
+        "model": "gpt-5.5"
+      },
+      "human_author": "locdp <locdp@teanis.vn>"
+    }
+  }
+}
