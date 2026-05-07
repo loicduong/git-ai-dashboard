@@ -1,0 +1,14 @@
+app/worker/metrics/upload/route.ts
+  h_413388cf092a47 8-17,24-25,31,33-55,59,61-62,68,74-81,84-91,93,98-104,106,108-109
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.1",
+  "base_commit_sha": "5c89d7662ad361949f56c268b70b0bd6310559b0",
+  "prompts": {},
+  "humans": {
+    "h_413388cf092a47": {
+      "author": "locdp <locdp@teanis.vn>"
+    }
+  }
+}
