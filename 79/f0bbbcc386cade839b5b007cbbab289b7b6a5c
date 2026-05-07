@@ -1,0 +1,25 @@
+tsconfig.json
+  s_608b6bd329cbe0::t_d424e04fd65370 35-36
+package.json
+  s_608b6bd329cbe0::t_52859ae864a56e 34
+  s_608b6bd329cbe0::t_d424e04fd65370 9
+  s_608b6bd329cbe0::t_b51cc635dc435e 35
+eslint.config.mjs
+  s_608b6bd329cbe0::t_d424e04fd65370 1-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.1",
+  "base_commit_sha": "79f0bbbcc386cade839b5b007cbbab289b7b6a5c",
+  "prompts": {},
+  "sessions": {
+    "s_608b6bd329cbe0": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e008d-24e0-75c1-8cbe-f3fea1f81520",
+        "model": "gpt-5.5"
+      },
+      "human_author": "locdp <locdp@teanis.vn>"
+    }
+  }
+}
