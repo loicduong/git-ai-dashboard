@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { getDashboardData } from "@/lib/data/dashboard";
+import { getDashboardData, getProjectDashboardData } from "@/lib/data/dashboard";
 
 const supabaseMocks = vi.hoisted(() => ({
   createSupabaseServerClient: vi.fn(),
@@ -111,6 +111,60 @@ describe("getDashboardData", () => {
     expect(result.projects.map((project) => project.repoUrl)).toContain(
       "https://github.com/acme/mobile",
     );
+  });
+
+  it("fetches project dashboard data with repo-scoped pagination", async () => {
+    process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.supabase.co";
+    process.env.SUPABASE_SERVICE_ROLE_KEY = "service-role-key";
+
+    const repoUrl = "https://github.com/acme/platform.git";
+    const firstPage = Array.from({ length: 1000 }, () =>
+      metric({
+        repo_url: repoUrl,
+        author: "mai@example.com",
+        timestamp: "2026-05-06T12:00:00.000Z",
+        human_additions: 1,
+        ai_additions: 1,
+      }),
+    );
+    const secondPage = [
+      metric({
+        repo_url: repoUrl,
+        author: "loic@example.com",
+        timestamp: "2026-05-05T12:00:00.000Z",
+        human_additions: 10,
+        ai_additions: 40,
+      }),
+    ];
+    const query = {
+      select: vi.fn(),
+      gte: vi.fn(),
+      lte: vi.fn(),
+      order: vi.fn(),
+      eq: vi.fn(),
+      range: vi.fn(),
+    };
+    const supabase = {
+      from: vi.fn(() => query),
+    };
+    query.select.mockReturnValue(query);
+    query.gte.mockReturnValue(query);
+    query.lte.mockReturnValue(query);
+    query.order.mockReturnValue(query);
+    query.eq.mockReturnValue(query);
+    query.range
+      .mockResolvedValueOnce({ data: firstPage, error: null })
+      .mockResolvedValueOnce({ data: secondPage, error: null });
+    supabaseMocks.createSupabaseServerClient.mockReturnValue(supabase);
+
+    const result = await getProjectDashboardData(repoUrl, "7d", new Date("2026-05-07T12:00:00.000Z"));
+
+    expect(query.eq).toHaveBeenCalledWith("repo_url", repoUrl);
+    expect(query.range).toHaveBeenNthCalledWith(1, 0, 999);
+    expect(query.range).toHaveBeenNthCalledWith(2, 1000, 1999);
+    expect(result.kpis.aiAdditions).toBe(1040);
+    expect(result.kpis.humanAdditions).toBe(1010);
+    expect(result.activity).toHaveLength(30);
   });
 });
 

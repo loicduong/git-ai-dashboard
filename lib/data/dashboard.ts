@@ -14,8 +14,26 @@ export async function getDashboardData(
   range: DashboardRange,
   now = new Date(),
 ): Promise<DashboardAggregation> {
+  const records = await getMetricRecords(range, now);
+  return aggregateDashboardMetrics(records, range, now);
+}
+
+export async function getProjectDashboardData(
+  repoUrl: string,
+  range: DashboardRange,
+  now = new Date(),
+): Promise<DashboardAggregation> {
+  const records = await getMetricRecords(range, now, repoUrl);
+  return aggregateDashboardMetrics(records, range, now);
+}
+
+async function getMetricRecords(
+  range: DashboardRange,
+  now: Date,
+  repoUrl?: string,
+): Promise<MetricRecord[]> {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    return aggregateDashboardMetrics(getSampleMetrics(range, now), range, now);
+    return getSampleMetrics(range, now).filter((record) => !repoUrl || record.repo_url === repoUrl);
   }
 
   const supabase = createSupabaseServerClient();
@@ -25,15 +43,20 @@ export async function getDashboardData(
   let offset = 0;
 
   while (true) {
-    const { data, error } = await supabase
+    let query = supabase
       .from("metrics")
       .select(
         "repo_url, author, timestamp, human_additions, ai_additions, total_additions, ai_ratio",
       )
       .gte("timestamp", rangeStart)
       .lte("timestamp", rangeEnd)
-      .order("timestamp", { ascending: false })
-      .range(offset, offset + METRICS_PAGE_SIZE - 1);
+      .order("timestamp", { ascending: false });
+
+    if (repoUrl) {
+      query = query.eq("repo_url", repoUrl);
+    }
+
+    const { data, error } = await query.range(offset, offset + METRICS_PAGE_SIZE - 1);
 
     if (error) {
       throw new Error(error.message);
@@ -49,7 +72,7 @@ export async function getDashboardData(
     offset += METRICS_PAGE_SIZE;
   }
 
-  return aggregateDashboardMetrics(records, range, now);
+  return records;
 }
 
 function getSampleMetrics(range: DashboardRange, now: Date): MetricRecord[] {

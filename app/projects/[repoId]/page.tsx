@@ -6,7 +6,7 @@ import { DataTable, type DataTableColumn } from "@/components/data-table"
 import { KpiCard } from "@/components/kpi-card"
 import { MetricLineChart } from "@/components/metric-line-chart"
 import { Badge } from "@/components/ui/badge"
-import { getDashboardData } from "@/lib/data/dashboard"
+import { getProjectDashboardData } from "@/lib/data/dashboard"
 import { formatInteger, formatPercent, shortRepoName } from "@/lib/format"
 import { parseDashboardRange } from "@/lib/analytics/ranges"
 
@@ -31,7 +31,7 @@ export default async function ProjectDetailPage({
   const [{ repoId }, resolvedSearchParams] = await Promise.all([params, searchParams])
   const repoUrl = decodeRepoId(repoId)
   const range = parseDashboardRange(resolvedSearchParams?.range)
-  const data = await getDashboardData(range)
+  const data = await getProjectDashboardData(repoUrl, range)
   const project = data.projects.find((candidate) => candidate.repoUrl === repoUrl)
 
   if (!project) {
