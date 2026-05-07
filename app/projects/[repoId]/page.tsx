@@ -29,7 +29,7 @@ export default async function ProjectDetailPage({
   searchParams?: SearchParams
 }) {
   const [{ repoId }, resolvedSearchParams] = await Promise.all([params, searchParams])
-  const repoUrl = decodeURIComponent(repoId)
+  const repoUrl = decodeRepoId(repoId)
   const range = parseDashboardRange(resolvedSearchParams?.range)
   const data = await getDashboardData(range)
   const project = data.projects.find((candidate) => candidate.repoUrl === repoUrl)
@@ -136,4 +136,8 @@ function formatDateTime(value: string): string {
     hour: "numeric",
     minute: "2-digit",
   }).format(new Date(value))
+}
+
+function decodeRepoId(repoId: string): string {
+  return Buffer.from(repoId, "base64url").toString("utf8")
 }

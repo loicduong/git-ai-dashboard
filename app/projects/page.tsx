@@ -30,7 +30,7 @@ export default async function ProjectsPage({
     repoUrl: project.repoUrl,
     repo: (
       <Link
-        href={`/projects/${encodeURIComponent(project.repoUrl)}?range=${range}`}
+        href={`/projects/${encodeRepoId(project.repoUrl)}?range=${range}`}
         className="block max-w-[24rem] truncate font-medium text-primary hover:underline"
       >
         {shortRepoName(project.repoUrl)}
@@ -73,4 +73,8 @@ function formatDate(value: string): string {
     day: "numeric",
     year: "numeric",
   }).format(new Date(value))
+}
+
+function encodeRepoId(repoUrl: string): string {
+  return Buffer.from(repoUrl, "utf8").toString("base64url")
 }
