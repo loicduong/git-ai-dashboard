@@ -94,7 +94,7 @@ export default async function OverviewPage({
         />
 
         <div className="flex justify-end">
-          <Link className="text-sm font-medium text-primary hover:underline" href="/activity">
+          <Link className="text-sm font-medium text-primary hover:underline" href={`/activity?range=${range}`}>
             View all activity
           </Link>
         </div>
