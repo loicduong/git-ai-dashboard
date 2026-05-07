@@ -1,0 +1,23 @@
+app/projects/[repoId]/page.tsx
+  s_ee0761be485004::t_28e9e077d5804b 9,34
+test/data/dashboard.test.ts
+  s_ee0761be485004::t_c2f2f1cec7c1d2 3,115-167
+lib/data/dashboard.ts
+  s_ee0761be485004::t_28e9e077d5804b 17-34,36,46,53-59,75
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.1",
+  "base_commit_sha": "99e46135b2b3be46416db4488f82d77ba8706c19",
+  "prompts": {},
+  "sessions": {
+    "s_ee0761be485004": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e0076-18d6-70b0-8d4c-2ae93e673214",
+        "model": "gpt-5.5"
+      },
+      "human_author": "locdp <locdp@teanis.vn>"
+    }
+  }
+}
