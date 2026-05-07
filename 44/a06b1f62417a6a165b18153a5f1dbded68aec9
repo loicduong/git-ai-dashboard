@@ -1,0 +1,21 @@
+app/worker/metrics/upload/route.ts
+  s_f98c7c0c11efbc::t_6473f3df8e5569 1-42
+app/worker/cas/upload/route.ts
+  s_f98c7c0c11efbc::t_6473f3df8e5569 1-44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.1",
+  "base_commit_sha": "44a06b1f62417a6a165b18153a5f1dbded68aec9",
+  "prompts": {},
+  "sessions": {
+    "s_f98c7c0c11efbc": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e00d5-8d24-7520-bf63-3adb3b63c573",
+        "model": "gpt-5.5"
+      },
+      "human_author": "locdp <locdp@teanis.vn>"
+    }
+  }
+}
