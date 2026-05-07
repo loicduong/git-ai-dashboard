@@ -13,7 +13,7 @@ import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
 
 const navItems = [
-  { label: "Overview", href: "/", icon: LayoutDashboardIcon },
+  { label: "Overview", href: "/me", icon: LayoutDashboardIcon },
   { label: "Projects", href: "/projects", icon: GitBranchIcon },
   { label: "Leaderboard", href: "/leaderboard", icon: TrophyIcon },
   { label: "Activity", href: "/activity", icon: ActivityIcon },
@@ -40,7 +40,7 @@ export function AppShell({
       <div className="grid min-h-screen lg:grid-cols-[17rem_1fr]">
         <aside className="border-b bg-card/55 backdrop-blur-xl lg:border-b-0 lg:border-r">
           <div className="flex h-full flex-col gap-6 p-4">
-            <Link href="/" className="flex items-center gap-3 rounded-md px-2 py-1.5">
+            <Link href="/me" className="flex items-center gap-3 rounded-md px-2 py-1.5">
               <span className="flex size-9 items-center justify-center rounded-md border bg-primary text-primary-foreground">
                 <BarChart3Icon className="size-4" aria-hidden="true" />
               </span>
