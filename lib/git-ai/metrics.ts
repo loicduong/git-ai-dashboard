@@ -1,0 +1,117 @@
+export type ParsedMetricsRow = {
+  repo_url: string;
+  author: string;
+  timestamp: string;
+  human_additions: number;
+  ai_additions: number;
+  total_additions: number;
+  ai_ratio: number;
+  raw_payload: unknown;
+};
+
+export type ParsedMetricsUpload = {
+  rows: ParsedMetricsRow[];
+  rejected: number;
+};
+
+type MetricsUploadRow = {
+  metrics: unknown[];
+  attrs: unknown[];
+  timestamp?: unknown;
+};
+
+const HUMAN_ADDITIONS_METRIC_INDEX = 0;
+const AI_ADDITIONS_METRIC_INDEX = 1;
+const REPO_URL_ATTR_INDEX = 1;
+const AUTHOR_ATTR_INDEX = 2;
+
+export function parseMetricsUpload(
+  payload: unknown,
+  receivedAt: Date = new Date(),
+): ParsedMetricsUpload {
+  const uploadRows = getUploadRows(payload);
+  const rows: ParsedMetricsRow[] = [];
+  let rejected = 0;
+
+  for (const uploadRow of uploadRows) {
+    const parsedRow = parseMetricsRow(uploadRow, receivedAt);
+
+    if (parsedRow === null) {
+      rejected += 1;
+      continue;
+    }
+
+    rows.push(parsedRow);
+  }
+
+  return { rows, rejected };
+}
+
+function getUploadRows(payload: unknown): unknown[] {
+  if (Array.isArray(payload)) {
+    return payload;
+  }
+
+  if (!isRecord(payload)) {
+    return [];
+  }
+
+  if (Array.isArray(payload.rows)) {
+    return payload.rows;
+  }
+
+  if (Array.isArray(payload.data)) {
+    return payload.data;
+  }
+
+  return [];
+}
+
+function parseMetricsRow(row: unknown, receivedAt: Date): ParsedMetricsRow | null {
+  if (!isMetricsUploadRow(row)) {
+    return null;
+  }
+
+  const humanAdditions = row.metrics[HUMAN_ADDITIONS_METRIC_INDEX];
+  const aiAdditions = row.metrics[AI_ADDITIONS_METRIC_INDEX];
+  const repoUrl = row.attrs[REPO_URL_ATTR_INDEX];
+  const author = row.attrs[AUTHOR_ATTR_INDEX];
+
+  if (
+    !isFiniteNumber(humanAdditions) ||
+    !isFiniteNumber(aiAdditions) ||
+    !isNonEmptyString(repoUrl) ||
+    !isNonEmptyString(author)
+  ) {
+    return null;
+  }
+
+  const totalAdditions = humanAdditions + aiAdditions;
+
+  return {
+    repo_url: repoUrl,
+    author,
+    timestamp: isNonEmptyString(row.timestamp) ? row.timestamp : receivedAt.toISOString(),
+    human_additions: humanAdditions,
+    ai_additions: aiAdditions,
+    total_additions: totalAdditions,
+    ai_ratio: totalAdditions === 0 ? 0 : aiAdditions / totalAdditions,
+    raw_payload: row,
+  };
+}
+
+function isMetricsUploadRow(value: unknown): value is MetricsUploadRow {
+  return isRecord(value) && Array.isArray(value.metrics) && Array.isArray(value.attrs);
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function isFiniteNumber(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value);
+}
+
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === "string" && value.trim().length > 0;
+}
