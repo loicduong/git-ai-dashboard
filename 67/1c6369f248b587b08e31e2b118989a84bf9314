@@ -1,0 +1,21 @@
+supabase/migrations/20260507000000_initial_schema.sql
+  s_c32d4420bf3381::t_148030ccd87ed0 1-59
+lib/supabase/server.ts
+  s_c32d4420bf3381::t_148030ccd87ed0 1-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.1",
+  "base_commit_sha": "671c6369f248b587b08e31e2b118989a84bf9314",
+  "prompts": {},
+  "sessions": {
+    "s_c32d4420bf3381": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e00ad-f072-7031-b53b-31c3c05b119a",
+        "model": "gpt-5.5"
+      },
+      "human_author": "locdp <locdp@teanis.vn>"
+    }
+  }
+}
