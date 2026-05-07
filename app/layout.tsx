@@ -3,7 +3,10 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Git AI Dashboard",
-  description: "Self-hosted analytics for Git AI contribution metrics"
+  description: "Self-hosted analytics for Git AI contribution metrics",
+  icons: {
+    icon: "/icon.svg"
+  }
 };
 
 export default function RootLayout({
