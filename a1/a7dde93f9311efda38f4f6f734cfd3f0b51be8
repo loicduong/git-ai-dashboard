@@ -1,0 +1,19 @@
+components/kpi-card.tsx
+  s_2fda0697ca6e4c::t_eb5c7a0335caac 43-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.1",
+  "base_commit_sha": "a1a7dde93f9311efda38f4f6f734cfd3f0b51be8",
+  "prompts": {},
+  "sessions": {
+    "s_2fda0697ca6e4c": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e00ec-1b11-78b2-943c-42857ffbe2c2",
+        "model": "gpt-5.5"
+      },
+      "human_author": "locdp <locdp@teanis.vn>"
+    }
+  }
+}
