@@ -12,16 +12,25 @@ export type MetricInsertRow = {
 export type MetricsParseResult = {
   rows: MetricInsertRow[];
   rejected: number;
+  unsupported: number;
 };
 
 type MetricsUploadRow = {
-  metrics: unknown[];
-  attrs: unknown[];
+  metrics?: unknown[];
+  attrs?: unknown[];
   timestamp?: unknown;
+  v?: unknown[] | Record<string, unknown>;
+  a?: unknown[] | Record<string, unknown>;
+  t?: unknown;
+  e?: unknown;
 };
 
 const HUMAN_ADDITIONS_METRIC_INDEX = 0;
 const AI_ADDITIONS_METRIC_INDEX = 1;
+const COMMITTED_EVENT_ID = 1;
+const COMMITTED_AI_ADDITIONS_INDEX = 5;
+const COMMITTED_TOTAL_AI_ADDITIONS_INDEX = 7;
+const GIT_AI_AGGREGATE_ARRAY_INDEX = 0;
 const REPO_URL_ATTR_INDEX = 1;
 const AUTHOR_ATTR_INDEX = 2;
 
@@ -32,11 +41,17 @@ export function parseMetricsUpload(
   const uploadRows = getUploadRows(payload);
   const rows: MetricInsertRow[] = [];
   let rejected = 0;
+  let unsupported = 0;
 
   for (const uploadRow of uploadRows) {
     const parsedRow = parseMetricsRow(uploadRow, receivedAt);
 
-    if (parsedRow === null) {
+    if (parsedRow === "unsupported") {
+      unsupported += 1;
+      continue;
+    }
+
+    if (parsedRow === "invalid") {
       rejected += 1;
       continue;
     }
@@ -44,7 +59,7 @@ export function parseMetricsUpload(
     rows.push(parsedRow);
   }
 
-  return { rows, rejected };
+  return { rows, rejected, unsupported };
 }
 
 function getUploadRows(payload: unknown): unknown[] {
@@ -64,18 +79,31 @@ function getUploadRows(payload: unknown): unknown[] {
     return payload.data;
   }
 
+  if (Array.isArray(payload.events)) {
+    return payload.events;
+  }
+
   return [];
 }
 
-function parseMetricsRow(row: unknown, receivedAt: Date): MetricInsertRow | null {
+function parseMetricsRow(
+  row: unknown,
+  receivedAt: Date,
+): MetricInsertRow | "invalid" | "unsupported" {
   if (!isMetricsUploadRow(row)) {
-    return null;
+    return "invalid";
   }
 
-  const humanAdditions = row.metrics[HUMAN_ADDITIONS_METRIC_INDEX];
-  const aiAdditions = row.metrics[AI_ADDITIONS_METRIC_INDEX];
-  const repoUrl = row.attrs[REPO_URL_ATTR_INDEX];
-  const author = row.attrs[AUTHOR_ATTR_INDEX];
+  if (row.e !== undefined && row.e !== COMMITTED_EVENT_ID) {
+    return "unsupported";
+  }
+
+  const values = row.metrics ?? row.v;
+  const attrs = row.attrs ?? row.a;
+  const humanAdditions = getPosition(values, HUMAN_ADDITIONS_METRIC_INDEX);
+  const aiAdditions = getAiAdditions(values, Array.isArray(row.metrics));
+  const repoUrl = getPosition(attrs, REPO_URL_ATTR_INDEX);
+  const author = getPosition(attrs, AUTHOR_ATTR_INDEX);
 
   if (
     !isValidAddition(humanAdditions) ||
@@ -83,19 +111,19 @@ function parseMetricsRow(row: unknown, receivedAt: Date): MetricInsertRow | null
     !isNonEmptyString(repoUrl) ||
     !isNonEmptyString(author)
   ) {
-    return null;
+    return "invalid";
   }
 
-  const timestamp = parseTimestamp(row.timestamp, receivedAt);
+  const timestamp = parseTimestamp(row.timestamp ?? row.t, receivedAt);
 
   if (timestamp === null) {
-    return null;
+    return "invalid";
   }
 
   const totalAdditions = humanAdditions + aiAdditions;
 
   if (!Number.isSafeInteger(totalAdditions)) {
-    return null;
+    return "invalid";
   }
 
   return {
@@ -111,7 +139,15 @@ function parseMetricsRow(row: unknown, receivedAt: Date): MetricInsertRow | null
 }
 
 function isMetricsUploadRow(value: unknown): value is MetricsUploadRow {
-  return isRecord(value) && Array.isArray(value.metrics) && Array.isArray(value.attrs);
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  const hasLegacyShape = Array.isArray(value.metrics) && Array.isArray(value.attrs);
+  const hasGitAiShape =
+    (Array.isArray(value.v) || isRecord(value.v)) && (Array.isArray(value.a) || isRecord(value.a));
+
+  return hasLegacyShape || hasGitAiShape;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -131,6 +167,10 @@ function parseTimestamp(value: unknown, receivedAt: Date): string | null {
     return receivedAt.toISOString();
   }
 
+  if (typeof value === "number" && Number.isSafeInteger(value) && value >= 0) {
+    return new Date(value * 1000).toISOString();
+  }
+
   if (!isNonEmptyString(value)) {
     return null;
   }
@@ -142,4 +182,36 @@ function parseTimestamp(value: unknown, receivedAt: Date): string | null {
   }
 
   return value;
+}
+
+function getPosition(source: unknown, index: number): unknown {
+  if (Array.isArray(source)) {
+    return source[index];
+  }
+
+  if (isRecord(source)) {
+    return source[String(index)];
+  }
+
+  return undefined;
+}
+
+function getAiAdditions(values: unknown, isLegacyMetricsArray: boolean): unknown {
+  if (isLegacyMetricsArray) {
+    return getPosition(values, AI_ADDITIONS_METRIC_INDEX);
+  }
+
+  const totalAiAdditions = getPosition(values, COMMITTED_TOTAL_AI_ADDITIONS_INDEX);
+
+  if (totalAiAdditions !== undefined) {
+    return totalAiAdditions;
+  }
+
+  const aiAdditionsByTool = getPosition(values, COMMITTED_AI_ADDITIONS_INDEX);
+
+  if (Array.isArray(aiAdditionsByTool)) {
+    return aiAdditionsByTool[GIT_AI_AGGREGATE_ARRAY_INDEX];
+  }
+
+  return aiAdditionsByTool;
 }

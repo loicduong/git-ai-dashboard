@@ -5,38 +5,107 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
+function logMetricsUpload(
+  status: "accepted" | "ignored" | "rejected" | "failed",
+  details: Record<string, unknown>,
+) {
+  console.info("[git-ai metrics upload]", {
+    status,
+    ...details,
+  });
+}
+
 export async function POST(request: Request) {
   let payload: unknown;
 
   try {
     payload = await request.json();
   } catch {
-    return NextResponse.json({ error: "Invalid JSON payload" }, { status: 400 });
+    logMetricsUpload("rejected", { reason: "invalid_json" });
+    return NextResponse.json({ error: "Invalid JSON payload", errors: [] }, { status: 400 });
   }
 
   const parsed = parseMetricsUpload(payload, new Date());
   const accepted = parsed.rows.length;
 
+  // Case: No metrics were accepted
   if (accepted === 0) {
+    if (parsed.unsupported > 0 && parsed.rejected === 0) {
+      logMetricsUpload("ignored", {
+        accepted: 0,
+        rejected: 0,
+        unsupported: parsed.unsupported,
+      });
+
+      return NextResponse.json({
+        errors: [],
+        accepted: 0,
+        rejected: 0,
+        unsupported: parsed.unsupported,
+        message: "No committed metrics rows in upload",
+      });
+    }
+
+    logMetricsUpload("rejected", {
+      accepted: 0,
+      rejected: parsed.rejected,
+      unsupported: parsed.unsupported,
+      reason: "no_valid_metrics_rows",
+    });
+
     return NextResponse.json(
-      { error: "No valid metrics rows", accepted: 0, rejected: parsed.rejected },
+      {
+        error: "No valid metrics rows",
+        errors: [],
+        accepted: 0,
+        rejected: parsed.rejected,
+        unsupported: parsed.unsupported,
+      },
       { status: 400 },
     );
   }
 
+  // Case: Success, try to insert into database
   try {
     const supabase = createSupabaseServerClient();
     const { error } = await supabase.from("metrics").insert(parsed.rows);
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      logMetricsUpload("failed", {
+        accepted,
+        rejected: parsed.rejected,
+        unsupported: parsed.unsupported,
+        reason: error.message,
+      });
+
+      return NextResponse.json({ error: error.message, errors: [] }, { status: 500 });
     }
   } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown Supabase error";
+    logMetricsUpload("failed", {
+      accepted,
+      rejected: parsed.rejected,
+      unsupported: parsed.unsupported,
+      reason: message,
+    });
+
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Unknown Supabase error" },
+      { error: message, errors: [] },
       { status: 500 },
     );
   }
 
-  return NextResponse.json({ accepted, rejected: parsed.rejected });
+  // Final Success Response
+  logMetricsUpload("accepted", { 
+    accepted, 
+    rejected: parsed.rejected, 
+    unsupported: parsed.unsupported 
+  });
+
+  return NextResponse.json({
+    errors: [],
+    accepted,
+    rejected: parsed.rejected,
+    unsupported: parsed.unsupported,
+  });
 }

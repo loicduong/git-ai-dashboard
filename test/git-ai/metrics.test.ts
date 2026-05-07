@@ -17,6 +17,7 @@ describe("parseMetricsUpload", () => {
     const result = parseMetricsUpload(payload, receivedAt);
 
     expect(result.rejected).toBe(0);
+    expect(result.unsupported).toBe(0);
     expect(result.rows).toEqual([
       {
         repo_url: "https://github.com/acme/api",
@@ -80,6 +81,7 @@ describe("parseMetricsUpload", () => {
 
     expect(result.rows).toHaveLength(1);
     expect(result.rejected).toBe(1);
+    expect(result.unsupported).toBe(0);
   });
 
   it("rejects rows with non-db-compatible additions", () => {
@@ -108,6 +110,7 @@ describe("parseMetricsUpload", () => {
 
     expect(result.rows).toHaveLength(0);
     expect(result.rejected).toBe(4);
+    expect(result.unsupported).toBe(0);
   });
 
   it("rejects rows with invalid supplied timestamps", () => {
@@ -125,6 +128,7 @@ describe("parseMetricsUpload", () => {
 
     expect(result.rows).toHaveLength(0);
     expect(result.rejected).toBe(1);
+    expect(result.unsupported).toBe(0);
   });
 
   it("rejects rows where individually safe additions produce an unsafe total", () => {
@@ -141,5 +145,89 @@ describe("parseMetricsUpload", () => {
 
     expect(result.rows).toHaveLength(0);
     expect(result.rejected).toBe(1);
+    expect(result.unsupported).toBe(0);
+  });
+
+  it("extracts committed events from git-ai MetricsBatch wire format", () => {
+    const payload = {
+      v: 1,
+      events: [
+        {
+          t: 1_777_000_000,
+          e: 1,
+          v: {
+            "0": 120,
+            "1": 999,
+            "5": [80, 50],
+          },
+          a: {
+            "1": "https://github.com/acme/api",
+            "2": "loic@example.com",
+          },
+        },
+      ],
+    };
+
+    const result = parseMetricsUpload(payload, new Date("2026-05-07T10:00:00.000Z"));
+
+    expect(result.rejected).toBe(0);
+    expect(result.unsupported).toBe(0);
+    expect(result.rows).toEqual([
+      {
+        repo_url: "https://github.com/acme/api",
+        author: "loic@example.com",
+        timestamp: "2026-04-24T03:06:40.000Z",
+        human_additions: 120,
+        ai_additions: 80,
+        total_additions: 200,
+        ai_ratio: 0.4,
+        raw_payload: payload.events[0],
+      },
+    ]);
+  });
+
+  it("prefers git-ai committed total AI additions when present", () => {
+    const payload = {
+      v: 1,
+      events: [
+        {
+          t: 1_777_000_000,
+          e: 1,
+          v: {
+            "0": 120,
+            "5": [30, 50],
+            "7": 95,
+          },
+          a: {
+            "1": "https://github.com/acme/api",
+            "2": "loic@example.com",
+          },
+        },
+      ],
+    };
+
+    const result = parseMetricsUpload(payload, new Date("2026-05-07T10:00:00.000Z"));
+
+    expect(result.rows[0]?.ai_additions).toBe(95);
+  });
+
+  it("marks non-committed git-ai events as unsupported for this dashboard metric", () => {
+    const payload = {
+      v: 1,
+      events: [
+        {
+          t: 1_777_000_000,
+          e: 2,
+          v: { "0": 120, "5": [80] },
+          a: { "1": "https://github.com/acme/api", "2": "loic@example.com" },
+        },
+      ],
+    };
+
+    const result = parseMetricsUpload(payload, new Date("2026-05-07T10:00:00.000Z"));
+
+    expect(result.rows).toHaveLength(0);
+    expect(result.rejected).toBe(0);
+    expect(result.unsupported).toBe(1);
   });
 });
