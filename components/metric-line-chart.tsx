@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import {
   CartesianGrid,
   Line,
@@ -38,6 +39,13 @@ export function MetricLineChart({
   data,
   className,
 }: MetricLineChartProps) {
+  const [isReady, setIsReady] = useState(false)
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => setIsReady(true))
+    return () => window.cancelAnimationFrame(frame)
+  }, [])
+
   return (
     <Card className={cn("border-border/70 bg-card/70 shadow-xl backdrop-blur-xl", className)}>
       <CardHeader className="gap-1">
@@ -46,52 +54,54 @@ export function MetricLineChart({
       </CardHeader>
       <CardContent>
         <div className="h-72 min-w-0">
-          <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={288}>
-            <LineChart data={data} margin={{ top: 8, right: 8, left: -18, bottom: 0 }}>
-              <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" vertical={false} />
-              <XAxis
-                dataKey="label"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
-                dy={8}
-              />
-              <YAxis
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
-                width={42}
-              />
-              <Tooltip
-                cursor={{ stroke: "var(--border)" }}
-                contentStyle={{
-                  background: "var(--popover)",
-                  border: "1px solid var(--border)",
-                  borderRadius: "var(--radius-md, 0.375rem)",
-                  color: "var(--popover-foreground)",
-                }}
-                labelStyle={{ color: "var(--foreground)" }}
-              />
-              <Line
-                type="monotone"
-                dataKey="ai"
-                name="AI"
-                stroke="var(--primary)"
-                strokeWidth={2}
-                dot={false}
-                activeDot={{ r: 4 }}
-              />
-              <Line
-                type="monotone"
-                dataKey="human"
-                name="Human"
-                stroke="var(--accent-foreground)"
-                strokeWidth={2}
-                dot={false}
-                activeDot={{ r: 4 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
+          {isReady ? (
+            <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={288}>
+              <LineChart data={data} margin={{ top: 8, right: 8, left: -18, bottom: 0 }}>
+                <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" vertical={false} />
+                <XAxis
+                  dataKey="label"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
+                  dy={8}
+                />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
+                  width={42}
+                />
+                <Tooltip
+                  cursor={{ stroke: "var(--border)" }}
+                  contentStyle={{
+                    background: "var(--popover)",
+                    border: "1px solid var(--border)",
+                    borderRadius: "var(--radius-md, 0.375rem)",
+                    color: "var(--popover-foreground)",
+                  }}
+                  labelStyle={{ color: "var(--foreground)" }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="ai"
+                  name="AI"
+                  stroke="var(--primary)"
+                  strokeWidth={2}
+                  dot={false}
+                  activeDot={{ r: 4 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="human"
+                  name="Human"
+                  stroke="var(--accent-foreground)"
+                  strokeWidth={2}
+                  dot={false}
+                  activeDot={{ r: 4 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : null}
         </div>
       </CardContent>
     </Card>
