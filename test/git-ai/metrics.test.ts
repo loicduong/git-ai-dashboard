@@ -126,4 +126,20 @@ describe("parseMetricsUpload", () => {
     expect(result.rows).toHaveLength(0);
     expect(result.rejected).toBe(1);
   });
+
+  it("rejects rows where individually safe additions produce an unsafe total", () => {
+    const payload = {
+      rows: [
+        {
+          metrics: [Number.MAX_SAFE_INTEGER, 1],
+          attrs: ["main", "https://github.com/acme/api", "loic@example.com"],
+        },
+      ],
+    };
+
+    const result = parseMetricsUpload(payload, new Date("2026-05-07T10:00:00.000Z"));
+
+    expect(result.rows).toHaveLength(0);
+    expect(result.rejected).toBe(1);
+  });
 });

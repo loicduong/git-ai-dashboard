@@ -94,6 +94,10 @@ function parseMetricsRow(row: unknown, receivedAt: Date): MetricInsertRow | null
 
   const totalAdditions = humanAdditions + aiAdditions;
 
+  if (!Number.isSafeInteger(totalAdditions)) {
+    return null;
+  }
+
   return {
     repo_url: repoUrl,
     author,
