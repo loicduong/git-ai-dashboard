@@ -1,0 +1,56 @@
+next.config.ts
+  s_608b6bd329cbe0::t_d5fa9e2c345b54 1-5
+components/ui/tabs.tsx
+  s_608b6bd329cbe0::t_b50d1230dcf337 1-91
+components/ui/tooltip.tsx
+  s_608b6bd329cbe0::t_b50d1230dcf337 1-57
+components/ui/table.tsx
+  s_608b6bd329cbe0::t_b50d1230dcf337 1-116
+.env.example
+  s_608b6bd329cbe0::t_d5fa9e2c345b54 1-2
+components.json
+  s_608b6bd329cbe0::t_d5fa9e2c345b54 1-20
+next-env.d.ts
+  s_608b6bd329cbe0::t_cb872c93778534 1-6
+postcss.config.mjs
+  s_608b6bd329cbe0::t_d5fa9e2c345b54 1-7
+components/ui/badge.tsx
+  s_608b6bd329cbe0::t_b50d1230dcf337 1-48
+lib/utils.ts
+  s_608b6bd329cbe0::t_02a9e01f65581b 1-6
+app/globals.css
+  s_608b6bd329cbe0::t_d5fa9e2c345b54 1-56
+components/ui/button.tsx
+  s_608b6bd329cbe0::t_b50d1230dcf337 1-64
+vitest.config.ts
+  s_608b6bd329cbe0::t_d5fa9e2c345b54 1-13
+tsconfig.json
+  s_608b6bd329cbe0::t_cb872c93778534 4-8,18,20-29,31-41
+  s_608b6bd329cbe0::t_d5fa9e2c345b54 1-3,9-17,19,30
+app/layout.tsx
+  s_608b6bd329cbe0::t_d5fa9e2c345b54 1-19
+package.json
+  s_608b6bd329cbe0::t_02a9e01f65581b 10
+  s_608b6bd329cbe0::t_b50d1230dcf337 21
+  s_608b6bd329cbe0::t_d5fa9e2c345b54 1-9,11-20,22-38
+components/ui/card.tsx
+  s_608b6bd329cbe0::t_b50d1230dcf337 1-92
+components/ui/separator.tsx
+  s_608b6bd329cbe0::t_b50d1230dcf337 1-28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.1",
+  "base_commit_sha": "817af63f3c0e2303d6c61a3f86012ed5d0a3c1cc",
+  "prompts": {},
+  "sessions": {
+    "s_608b6bd329cbe0": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e008d-24e0-75c1-8cbe-f3fea1f81520",
+        "model": "gpt-5.5"
+      },
+      "human_author": "locdp <locdp@teanis.vn>"
+    }
+  }
+}
