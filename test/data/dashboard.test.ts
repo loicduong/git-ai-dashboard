@@ -40,6 +40,7 @@ describe("getDashboardData", () => {
       gte: vi.fn(),
       lte: vi.fn(),
       order: vi.fn(),
+      range: vi.fn(),
     };
     const supabase = {
       from: vi.fn(() => query),
@@ -47,7 +48,8 @@ describe("getDashboardData", () => {
     query.select.mockReturnValue(query);
     query.gte.mockReturnValue(query);
     query.lte.mockReturnValue(query);
-    query.order.mockResolvedValue({ data: [], error: null });
+    query.order.mockReturnValue(query);
+    query.range.mockResolvedValue({ data: [], error: null });
     supabaseMocks.createSupabaseServerClient.mockReturnValue(supabase);
 
     await getDashboardData("7d", new Date("2026-05-07T12:00:00.000Z"));
@@ -55,6 +57,75 @@ describe("getDashboardData", () => {
     expect(query.gte).toHaveBeenCalledWith("timestamp", "2026-04-30T12:00:00.000Z");
     expect(query.lte).toHaveBeenCalledWith("timestamp", "2026-05-07T12:00:00.000Z");
     expect(query.order).toHaveBeenCalledWith("timestamp", { ascending: false });
+    expect(query.range).toHaveBeenCalledWith(0, 999);
     expect(query).not.toHaveProperty("limit");
   });
+
+  it("aggregates Supabase metrics from every fetched page", async () => {
+    process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.supabase.co";
+    process.env.SUPABASE_SERVICE_ROLE_KEY = "service-role-key";
+
+    const firstPage = Array.from({ length: 1000 }, () =>
+      metric({
+        repo_url: "https://github.com/acme/api",
+        author: "mai@example.com",
+        timestamp: "2026-05-06T12:00:00.000Z",
+        human_additions: 1,
+        ai_additions: 1,
+      }),
+    );
+    const secondPage = [
+      metric({
+        repo_url: "https://github.com/acme/mobile",
+        author: "loic@example.com",
+        timestamp: "2026-05-05T12:00:00.000Z",
+        human_additions: 10,
+        ai_additions: 40,
+      }),
+    ];
+    const query = {
+      select: vi.fn(),
+      gte: vi.fn(),
+      lte: vi.fn(),
+      order: vi.fn(),
+      range: vi.fn(),
+    };
+    const supabase = {
+      from: vi.fn(() => query),
+    };
+    query.select.mockReturnValue(query);
+    query.gte.mockReturnValue(query);
+    query.lte.mockReturnValue(query);
+    query.order.mockReturnValue(query);
+    query.range
+      .mockResolvedValueOnce({ data: firstPage, error: null })
+      .mockResolvedValueOnce({ data: secondPage, error: null });
+    supabaseMocks.createSupabaseServerClient.mockReturnValue(supabase);
+
+    const result = await getDashboardData("7d", new Date("2026-05-07T12:00:00.000Z"));
+
+    expect(query.range).toHaveBeenNthCalledWith(1, 0, 999);
+    expect(query.range).toHaveBeenNthCalledWith(2, 1000, 1999);
+    expect(result.kpis.aiAdditions).toBe(1040);
+    expect(result.kpis.humanAdditions).toBe(1010);
+    expect(result.projects.map((project) => project.repoUrl)).toContain(
+      "https://github.com/acme/mobile",
+    );
+  });
 });
+
+function metric(record: {
+  repo_url: string;
+  author: string;
+  timestamp: string;
+  human_additions: number;
+  ai_additions: number;
+}) {
+  const totalAdditions = record.human_additions + record.ai_additions;
+
+  return {
+    ...record,
+    total_additions: totalAdditions,
+    ai_ratio: totalAdditions === 0 ? 0 : record.ai_additions / totalAdditions,
+  };
+}

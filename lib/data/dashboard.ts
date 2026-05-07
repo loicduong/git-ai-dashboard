@@ -8,6 +8,8 @@ import {
 import { getRangeStart, type DashboardRange } from "@/lib/analytics/ranges";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
+const METRICS_PAGE_SIZE = 1000;
+
 export async function getDashboardData(
   range: DashboardRange,
   now = new Date(),
@@ -17,20 +19,37 @@ export async function getDashboardData(
   }
 
   const supabase = createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from("metrics")
-    .select(
-      "repo_url, author, timestamp, human_additions, ai_additions, total_additions, ai_ratio",
-    )
-    .gte("timestamp", getRangeStart(range, now).toISOString())
-    .lte("timestamp", now.toISOString())
-    .order("timestamp", { ascending: false });
+  const records: MetricRecord[] = [];
+  const rangeStart = getRangeStart(range, now).toISOString();
+  const rangeEnd = now.toISOString();
+  let offset = 0;
 
-  if (error) {
-    throw new Error(error.message);
+  while (true) {
+    const { data, error } = await supabase
+      .from("metrics")
+      .select(
+        "repo_url, author, timestamp, human_additions, ai_additions, total_additions, ai_ratio",
+      )
+      .gte("timestamp", rangeStart)
+      .lte("timestamp", rangeEnd)
+      .order("timestamp", { ascending: false })
+      .range(offset, offset + METRICS_PAGE_SIZE - 1);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    const page = (data ?? []) as MetricRecord[];
+    records.push(...page);
+
+    if (page.length < METRICS_PAGE_SIZE) {
+      break;
+    }
+
+    offset += METRICS_PAGE_SIZE;
   }
 
-  return aggregateDashboardMetrics((data ?? []) as MetricRecord[], range, now);
+  return aggregateDashboardMetrics(records, range, now);
 }
 
 function getSampleMetrics(range: DashboardRange, now: Date): MetricRecord[] {
