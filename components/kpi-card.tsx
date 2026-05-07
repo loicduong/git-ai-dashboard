@@ -40,8 +40,12 @@ export function KpiCard({
         {description ? <CardDescription>{description}</CardDescription> : null}
       </CardHeader>
       <CardContent className="flex items-end justify-between gap-3">
-        <div className="truncate text-3xl font-semibold tracking-normal">{value}</div>
-        {trend ? <Badge variant="secondary">{trend}</Badge> : null}
+        <div className="min-w-0 truncate text-3xl font-semibold tracking-normal">{value}</div>
+        {trend ? (
+          <Badge variant="secondary" className="shrink-0">
+            {trend}
+          </Badge>
+        ) : null}
       </CardContent>
     </Card>
   )
