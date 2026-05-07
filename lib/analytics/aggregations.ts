@@ -52,11 +52,18 @@ export function aggregateDashboardMetrics(
   now: Date,
 ): DashboardAggregation {
   const rangeStart = getRangeStart(range, now);
+  const rangeEnd = now.getTime();
   const scopedRecords = records
     .filter((record) => {
       const timestamp = new Date(record.timestamp).getTime();
 
-      return !Number.isNaN(timestamp) && timestamp >= rangeStart.getTime();
+      return (
+        !Number.isNaN(timestamp) &&
+        timestamp >= rangeStart.getTime() &&
+        timestamp <= rangeEnd &&
+        isValidAddition(record.ai_additions) &&
+        isValidAddition(record.human_additions)
+      );
     })
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
   const aiAdditions = sum(scopedRecords, "ai_additions");
@@ -145,7 +152,12 @@ function buildProjects(records: MetricRecord[]): DashboardAggregation["projects"
         lastActivity: value.lastActivity,
       };
     })
-    .sort((a, b) => b.totalAdditions - a.totalAdditions);
+    .sort(
+      (a, b) =>
+        b.totalAdditions - a.totalAdditions ||
+        new Date(b.lastActivity).getTime() - new Date(a.lastActivity).getTime() ||
+        a.repoUrl.localeCompare(b.repoUrl),
+    );
 }
 
 function buildLeaderboard(records: MetricRecord[]): DashboardAggregation["leaderboard"] {
@@ -184,7 +196,12 @@ function buildLeaderboard(records: MetricRecord[]): DashboardAggregation["leader
         isLowVolume: totalAdditions < MIN_LEADERBOARD_VOLUME,
       };
     })
-    .sort((a, b) => b.aiAdditions - a.aiAdditions);
+    .sort(
+      (a, b) =>
+        b.aiAdditions - a.aiAdditions ||
+        b.totalAdditions - a.totalAdditions ||
+        a.author.localeCompare(b.author),
+    );
 }
 
 function sum(records: MetricRecord[], key: "ai_additions" | "human_additions"): number {
@@ -193,4 +210,8 @@ function sum(records: MetricRecord[], key: "ai_additions" | "human_additions"): 
 
 function ratio(part: number, total: number): number {
   return total === 0 ? 0 : part / total;
+}
+
+function isValidAddition(value: number): boolean {
+  return Number.isSafeInteger(value) && value >= 0;
 }

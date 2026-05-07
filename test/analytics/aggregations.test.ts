@@ -144,7 +144,7 @@ describe("aggregateDashboardMetrics", () => {
   });
 
   it("sorts activity newest first, limits it to 30, and skips invalid timestamps", () => {
-    const now = new Date("2026-05-07T12:00:00.000Z");
+    const now = new Date("2026-05-31T12:00:00.000Z");
     const records = Array.from({ length: 31 }, (_, index) =>
       metric({
         repo_url: "https://github.com/acme/api",
@@ -177,6 +177,167 @@ describe("aggregateDashboardMetrics", () => {
     expect(result.activity[0]?.timestamp).toBe("2026-05-31T12:00:00.000Z");
     expect(result.activity.at(-1)?.timestamp).toBe("2026-05-02T12:00:00.000Z");
     expect(result.kpis.totalAdditions).toBe(62);
+  });
+
+  it("excludes records after now", () => {
+    const result = aggregateDashboardMetrics(
+      [
+        metric({
+          repo_url: "https://github.com/acme/api",
+          author: "loic@example.com",
+          timestamp: "2026-05-07T12:00:00.000Z",
+          human_additions: 10,
+          ai_additions: 40,
+        }),
+        metric({
+          repo_url: "https://github.com/acme/api",
+          author: "loic@example.com",
+          timestamp: "2026-05-07T12:00:00.001Z",
+          human_additions: 100,
+          ai_additions: 400,
+        }),
+      ],
+      "7d",
+      new Date("2026-05-07T12:00:00.000Z"),
+    );
+
+    expect(result.kpis.totalAdditions).toBe(50);
+    expect(result.activity).toHaveLength(1);
+    expect(result.activity[0]?.timestamp).toBe("2026-05-07T12:00:00.000Z");
+  });
+
+  it("excludes records with invalid addition counts", () => {
+    const result = aggregateDashboardMetrics(
+      [
+        metric({
+          repo_url: "https://github.com/acme/api",
+          author: "loic@example.com",
+          timestamp: "2026-05-07T12:00:00.000Z",
+          human_additions: 10,
+          ai_additions: 40,
+        }),
+        metric({
+          repo_url: "https://github.com/acme/api",
+          author: "nan@example.com",
+          timestamp: "2026-05-07T11:00:00.000Z",
+          human_additions: 10,
+          ai_additions: Number.NaN,
+        }),
+        metric({
+          repo_url: "https://github.com/acme/api",
+          author: "infinity@example.com",
+          timestamp: "2026-05-07T10:00:00.000Z",
+          human_additions: Infinity,
+          ai_additions: 10,
+        }),
+        metric({
+          repo_url: "https://github.com/acme/api",
+          author: "negative@example.com",
+          timestamp: "2026-05-07T09:00:00.000Z",
+          human_additions: 10,
+          ai_additions: -1,
+        }),
+      ],
+      "7d",
+      new Date("2026-05-07T12:00:00.000Z"),
+    );
+
+    expect(result.kpis).toMatchObject({
+      aiAdditions: 40,
+      humanAdditions: 10,
+      totalAdditions: 50,
+      aiShare: 0.8,
+    });
+    expect(result.leaderboard).toHaveLength(1);
+    expect(result.leaderboard[0]?.author).toBe("loic@example.com");
+  });
+
+  it("sorts project ties by last activity descending and repo URL ascending", () => {
+    const result = aggregateDashboardMetrics(
+      [
+        metric({
+          repo_url: "https://github.com/acme/old",
+          author: "loic@example.com",
+          timestamp: "2026-05-05T12:00:00.000Z",
+          human_additions: 50,
+          ai_additions: 50,
+        }),
+        metric({
+          repo_url: "https://github.com/acme/recent",
+          author: "loic@example.com",
+          timestamp: "2026-05-06T12:00:00.000Z",
+          human_additions: 50,
+          ai_additions: 50,
+        }),
+        metric({
+          repo_url: "https://github.com/acme/zeta",
+          author: "loic@example.com",
+          timestamp: "2026-05-04T12:00:00.000Z",
+          human_additions: 50,
+          ai_additions: 50,
+        }),
+        metric({
+          repo_url: "https://github.com/acme/alpha",
+          author: "loic@example.com",
+          timestamp: "2026-05-04T12:00:00.000Z",
+          human_additions: 50,
+          ai_additions: 50,
+        }),
+      ],
+      "7d",
+      new Date("2026-05-07T12:00:00.000Z"),
+    );
+
+    expect(result.projects.map((project) => project.repoUrl)).toEqual([
+      "https://github.com/acme/recent",
+      "https://github.com/acme/old",
+      "https://github.com/acme/alpha",
+      "https://github.com/acme/zeta",
+    ]);
+  });
+
+  it("sorts leaderboard ties by total additions descending and author ascending", () => {
+    const result = aggregateDashboardMetrics(
+      [
+        metric({
+          repo_url: "https://github.com/acme/api",
+          author: "zoe@example.com",
+          timestamp: "2026-05-06T12:00:00.000Z",
+          human_additions: 10,
+          ai_additions: 50,
+        }),
+        metric({
+          repo_url: "https://github.com/acme/api",
+          author: "mai@example.com",
+          timestamp: "2026-05-06T12:00:00.000Z",
+          human_additions: 100,
+          ai_additions: 50,
+        }),
+        metric({
+          repo_url: "https://github.com/acme/api",
+          author: "zara@example.com",
+          timestamp: "2026-05-06T12:00:00.000Z",
+          human_additions: 10,
+          ai_additions: 40,
+        }),
+        metric({
+          repo_url: "https://github.com/acme/api",
+          author: "anna@example.com",
+          timestamp: "2026-05-06T12:00:00.000Z",
+          human_additions: 10,
+          ai_additions: 40,
+        }),
+      ],
+      "7d",
+      new Date("2026-05-07T12:00:00.000Z"),
+    );
+
+    expect(result.leaderboard.map((person) => person.author)).toEqual([
+      "mai@example.com",
+      "zoe@example.com",
+      "anna@example.com",
+      "zara@example.com",
+    ]);
   });
 
   it("returns zero shares when totals are zero", () => {
