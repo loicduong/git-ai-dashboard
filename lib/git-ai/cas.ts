@@ -72,7 +72,12 @@ function parseCasObject(value: unknown, payload: unknown): CasUpsertRow | null {
     return null;
   }
 
-  const metadata = isPlainRecord(uploadObject.metadata) ? uploadObject.metadata : {};
+  const metadata = parseMetadata(uploadObject.metadata);
+
+  if (metadata === null) {
+    return null;
+  }
+
   const topLevelMetadata = isRecord(payload) ? payload : {};
 
   return {
@@ -82,6 +87,18 @@ function parseCasObject(value: unknown, payload: unknown): CasUpsertRow | null {
     repo_url: resolveMetadataString(metadata, uploadObject, topLevelMetadata, "repo_url"),
     author: resolveMetadataString(metadata, uploadObject, topLevelMetadata, "author"),
   };
+}
+
+function parseMetadata(value: unknown): Record<string, unknown> | null {
+  if (value === undefined || !isRecord(value)) {
+    return {};
+  }
+
+  if (!isPlainRecord(value)) {
+    return {};
+  }
+
+  return isJsonValue(value) ? value : null;
 }
 
 function resolveMetadataString(

@@ -129,4 +129,50 @@ describe("parseCasUpload", () => {
     expect(result.rows).toHaveLength(1);
     expect(result.rows[0]?.hash).toBe("array-hash");
   });
+
+  it("rejects CAS objects with non-JSON metadata while accepting valid ones", () => {
+    const payload = {
+      objects: [
+        {
+          hash: "valid-metadata",
+          content: { ok: true },
+          metadata: {
+            repo_url: "https://github.com/acme/dashboard",
+            labels: ["cas", null, 1],
+          },
+        },
+        {
+          hash: "bigint-metadata",
+          content: { ok: true },
+          metadata: { value: BigInt(1) },
+        },
+        {
+          hash: "nested-undefined-metadata",
+          content: { ok: true },
+          metadata: { nested: undefined },
+        },
+        {
+          hash: "nan-metadata",
+          content: { ok: true },
+          metadata: { score: Number.NaN },
+        },
+      ],
+    };
+
+    const result = parseCasUpload(payload);
+
+    expect(result.rows).toEqual([
+      {
+        hash: "valid-metadata",
+        content: { ok: true },
+        metadata: {
+          repo_url: "https://github.com/acme/dashboard",
+          labels: ["cas", null, 1],
+        },
+        repo_url: "https://github.com/acme/dashboard",
+        author: null,
+      },
+    ]);
+    expect(result.rejected).toBe(3);
+  });
 });
