@@ -16,5 +16,12 @@ export function formatPercent(value: number): string {
 }
 
 export function shortRepoName(repoUrl: string): string {
-  return repoUrl.replace(/^[a-z][a-z\d+\-.]*:\/\/[^/]+\/?/i, "").replace(/\.git$/i, "");
+  const trimmedRepoUrl = repoUrl.trim();
+  const scpStyleMatch = trimmedRepoUrl.includes("://")
+    ? null
+    : trimmedRepoUrl.match(/^(?:[^@\s]+@)?[^:/\s]+:(.+)$/);
+  const withoutHost =
+    scpStyleMatch?.[1] ?? trimmedRepoUrl.replace(/^[a-z][a-z\d+\-.]*:\/\/[^/]+\/?/i, "");
+
+  return withoutHost.replace(/\.git$/i, "");
 }
