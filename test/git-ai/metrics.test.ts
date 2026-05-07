@@ -81,4 +81,49 @@ describe("parseMetricsUpload", () => {
     expect(result.rows).toHaveLength(1);
     expect(result.rejected).toBe(1);
   });
+
+  it("rejects rows with non-db-compatible additions", () => {
+    const payload = {
+      rows: [
+        {
+          metrics: [-1, 5],
+          attrs: ["main", "https://github.com/acme/api", "loic@example.com"],
+        },
+        {
+          metrics: [1.5, 5],
+          attrs: ["main", "https://github.com/acme/api", "loic@example.com"],
+        },
+        {
+          metrics: [10, Infinity],
+          attrs: ["main", "https://github.com/acme/api", "loic@example.com"],
+        },
+        {
+          metrics: [10, Number.NaN],
+          attrs: ["main", "https://github.com/acme/api", "loic@example.com"],
+        },
+      ],
+    };
+
+    const result = parseMetricsUpload(payload, new Date("2026-05-07T10:00:00.000Z"));
+
+    expect(result.rows).toHaveLength(0);
+    expect(result.rejected).toBe(4);
+  });
+
+  it("rejects rows with invalid supplied timestamps", () => {
+    const payload = {
+      rows: [
+        {
+          metrics: [10, 5],
+          attrs: ["main", "https://github.com/acme/api", "loic@example.com"],
+          timestamp: "not-a-date",
+        },
+      ],
+    };
+
+    const result = parseMetricsUpload(payload, new Date("2026-05-07T10:00:00.000Z"));
+
+    expect(result.rows).toHaveLength(0);
+    expect(result.rejected).toBe(1);
+  });
 });

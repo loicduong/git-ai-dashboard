@@ -78,11 +78,17 @@ function parseMetricsRow(row: unknown, receivedAt: Date): MetricInsertRow | null
   const author = row.attrs[AUTHOR_ATTR_INDEX];
 
   if (
-    !isFiniteNumber(humanAdditions) ||
-    !isFiniteNumber(aiAdditions) ||
+    !isValidAddition(humanAdditions) ||
+    !isValidAddition(aiAdditions) ||
     !isNonEmptyString(repoUrl) ||
     !isNonEmptyString(author)
   ) {
+    return null;
+  }
+
+  const timestamp = parseTimestamp(row.timestamp, receivedAt);
+
+  if (timestamp === null) {
     return null;
   }
 
@@ -91,7 +97,7 @@ function parseMetricsRow(row: unknown, receivedAt: Date): MetricInsertRow | null
   return {
     repo_url: repoUrl,
     author,
-    timestamp: isNonEmptyString(row.timestamp) ? row.timestamp : receivedAt.toISOString(),
+    timestamp,
     human_additions: humanAdditions,
     ai_additions: aiAdditions,
     total_additions: totalAdditions,
@@ -108,10 +114,28 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
 
-function isFiniteNumber(value: unknown): value is number {
-  return typeof value === "number" && Number.isFinite(value);
+function isValidAddition(value: unknown): value is number {
+  return typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
 }
 
 function isNonEmptyString(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
+}
+
+function parseTimestamp(value: unknown, receivedAt: Date): string | null {
+  if (value === undefined) {
+    return receivedAt.toISOString();
+  }
+
+  if (!isNonEmptyString(value)) {
+    return null;
+  }
+
+  const parsedTimestamp = new Date(value);
+
+  if (Number.isNaN(parsedTimestamp.getTime())) {
+    return null;
+  }
+
+  return value;
 }
