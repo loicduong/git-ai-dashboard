@@ -1,0 +1,28 @@
+test/data/dashboard.test.ts
+  s_c1cf74f336319d::t_38ffd5041d3a45 2-3,13-19,21-31,59-60
+  s_c1cf74f336319d::t_71be9cbbab8b99 5-8,10-12,20,32-58
+  s_c1cf74f336319d::t_704244dd2b9ab8 1,4,9
+lib/format.ts
+  s_c1cf74f336319d::t_71be9cbbab8b99 20-22
+  s_c1cf74f336319d::t_704244dd2b9ab8 19,23-26
+lib/data/dashboard.ts
+  s_c1cf74f336319d::t_704244dd2b9ab8 8,16,25-27,36-38,43,50,57,64,71,78,95-99
+test/format.test.ts
+  s_c1cf74f336319d::t_38ffd5041d3a45 1-13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.1",
+  "base_commit_sha": "65ffd62cf1242a918b6addf364d10b2ce8bd15c0",
+  "prompts": {},
+  "sessions": {
+    "s_c1cf74f336319d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e00db-6b7d-77f1-8731-6804dcf66b55",
+        "model": "gpt-5.5"
+      },
+      "human_author": "locdp <locdp@teanis.vn>"
+    }
+  }
+}
