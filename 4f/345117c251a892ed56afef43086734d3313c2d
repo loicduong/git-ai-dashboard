@@ -1,0 +1,20 @@
+docs/superpowers/plans/2026-05-07-git-ai-dashboard.md
+  s_ee0761be485004::t_3815b49b859178 1-91,93-1955,1957,1959,2116-2119,2121-2129,2131-2242
+  s_ee0761be485004::t_306ac3f474860c 92,1956,1958,1960-2115,2120,2130
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.1",
+  "base_commit_sha": "4f345117c251a892ed56afef43086734d3313c2d",
+  "prompts": {},
+  "sessions": {
+    "s_ee0761be485004": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e0076-18d6-70b0-8d4c-2ae93e673214",
+        "model": "gpt-5.5"
+      },
+      "human_author": "locdp <locdp@teanis.vn>"
+    }
+  }
+}
