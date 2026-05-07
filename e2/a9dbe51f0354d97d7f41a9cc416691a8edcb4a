@@ -1,0 +1,23 @@
+app/layout.tsx
+  s_ee0761be485004::t_6225d734e62120 6-9
+components/metric-line-chart.tsx
+  s_ee0761be485004::t_6225d734e62120 48-49
+app/icon.svg
+  s_ee0761be485004::t_6225d734e62120 1-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.1",
+  "base_commit_sha": "e2a9dbe51f0354d97d7f41a9cc416691a8edcb4a",
+  "prompts": {},
+  "sessions": {
+    "s_ee0761be485004": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e0076-18d6-70b0-8d4c-2ae93e673214",
+        "model": "gpt-5.5"
+      },
+      "human_author": "locdp <locdp@teanis.vn>"
+    }
+  }
+}
