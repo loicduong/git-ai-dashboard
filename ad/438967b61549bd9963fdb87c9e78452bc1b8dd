@@ -1,0 +1,23 @@
+lib/data/dashboard.ts
+  s_c1cf74f336319d::t_e1156d340b21d1 11-12,22-49,52
+test/data/dashboard.test.ts
+  s_c1cf74f336319d::t_e1156d340b21d1 43,51-52,60
+  s_c1cf74f336319d::t_44d2ec6b243a7f 63-67,69-114,116-131
+  s_c1cf74f336319d::t_65979142bf26b9 68
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.1",
+  "base_commit_sha": "ad438967b61549bd9963fdb87c9e78452bc1b8dd",
+  "prompts": {},
+  "sessions": {
+    "s_c1cf74f336319d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e00db-6b7d-77f1-8731-6804dcf66b55",
+        "model": "gpt-5.5"
+      },
+      "human_author": "locdp <locdp@teanis.vn>"
+    }
+  }
+}
