@@ -1,0 +1,16 @@
+skills-lock.json
+  h_413388cf092a47 1-47
+AGENTS.md
+  h_413388cf092a47 1-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.1",
+  "base_commit_sha": "74c55500fdfc208da81bac22e34963131ecd4423",
+  "prompts": {},
+  "humans": {
+    "h_413388cf092a47": {
+      "author": "locdp <locdp@teanis.vn>"
+    }
+  }
+}
