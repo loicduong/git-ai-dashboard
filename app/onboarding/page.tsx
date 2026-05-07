@@ -92,19 +92,17 @@ function EndpointCard({
   path: string
 }) {
   return (
-    <Card className="border-border/70 bg-background/40 shadow-none">
-      <CardHeader className="gap-1">
-        <CardTitle className="flex items-center gap-2 text-sm">
-          <Icon className="size-4" aria-hidden="true" />
-          {title}
-        </CardTitle>
-        <CardDescription>
+    <section className="rounded-md border border-border/70 bg-background/40 p-4">
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="flex min-w-0 items-center gap-2 text-sm font-semibold">
+            <Icon className="size-4" aria-hidden="true" />
+            <span className="truncate">{title}</span>
+          </h2>
           <Badge variant="outline">{method}</Badge>
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+        </div>
         <code className="block overflow-x-auto rounded-md bg-muted px-3 py-2 text-xs">{path}</code>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   )
 }
