@@ -1,0 +1,19 @@
+components/metric-line-chart.tsx
+  s_ee0761be485004::t_c4b24a20df7b0f 3,41-42,45-57,67-117
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.1",
+  "base_commit_sha": "65cd29cfe8ca5cd22f63fb5ab1e5bcd7d5a24978",
+  "prompts": {},
+  "sessions": {
+    "s_ee0761be485004": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e0076-18d6-70b0-8d4c-2ae93e673214",
+        "model": "gpt-5.5"
+      },
+      "human_author": "locdp <locdp@teanis.vn>"
+    }
+  }
+}
