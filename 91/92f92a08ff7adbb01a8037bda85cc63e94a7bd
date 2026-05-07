@@ -1,0 +1,21 @@
+lib/git-ai/cas.ts
+  s_f133b7357dce11::t_beecc83abde6db 1-150
+test/git-ai/cas.test.ts
+  s_f133b7357dce11::t_3f6617633aa0fd 1-132
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.1",
+  "base_commit_sha": "9192f92a08ff7adbb01a8037bda85cc63e94a7bd",
+  "prompts": {},
+  "sessions": {
+    "s_f133b7357dce11": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e00c2-6a69-77c0-9a2c-11a7e13f88f7",
+        "model": "gpt-5.5"
+      },
+      "human_author": "locdp <locdp@teanis.vn>"
+    }
+  }
+}
