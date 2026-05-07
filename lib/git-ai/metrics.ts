@@ -1,4 +1,4 @@
-export type ParsedMetricsRow = {
+export type MetricInsertRow = {
   repo_url: string;
   author: string;
   timestamp: string;
@@ -9,8 +9,8 @@ export type ParsedMetricsRow = {
   raw_payload: unknown;
 };
 
-export type ParsedMetricsUpload = {
-  rows: ParsedMetricsRow[];
+export type MetricsParseResult = {
+  rows: MetricInsertRow[];
   rejected: number;
 };
 
@@ -28,9 +28,9 @@ const AUTHOR_ATTR_INDEX = 2;
 export function parseMetricsUpload(
   payload: unknown,
   receivedAt: Date = new Date(),
-): ParsedMetricsUpload {
+): MetricsParseResult {
   const uploadRows = getUploadRows(payload);
-  const rows: ParsedMetricsRow[] = [];
+  const rows: MetricInsertRow[] = [];
   let rejected = 0;
 
   for (const uploadRow of uploadRows) {
@@ -67,7 +67,7 @@ function getUploadRows(payload: unknown): unknown[] {
   return [];
 }
 
-function parseMetricsRow(row: unknown, receivedAt: Date): ParsedMetricsRow | null {
+function parseMetricsRow(row: unknown, receivedAt: Date): MetricInsertRow | null {
   if (!isMetricsUploadRow(row)) {
     return null;
   }
