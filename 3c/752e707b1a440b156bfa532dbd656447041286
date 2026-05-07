@@ -1,0 +1,30 @@
+app/projects/page.tsx
+  s_efa9bbf096fb45::t_dfa358a142b638 1-76
+app/onboarding/page.tsx
+  s_efa9bbf096fb45::t_4f5643b704ac55 1-7,89
+  s_efa9bbf096fb45::t_dfa358a142b638 8-88,90-110
+app/leaderboard/page.tsx
+  s_efa9bbf096fb45::t_dfa358a142b638 1-72
+app/projects/[repoId]/page.tsx
+  s_efa9bbf096fb45::t_dfa358a142b638 1-139
+app/page.tsx
+  s_efa9bbf096fb45::t_dfa358a142b638 1-122
+app/activity/page.tsx
+  s_efa9bbf096fb45::t_dfa358a142b638 1-82
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.1",
+  "base_commit_sha": "3c752e707b1a440b156bfa532dbd656447041286",
+  "prompts": {},
+  "sessions": {
+    "s_efa9bbf096fb45": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e00fb-f987-77f3-86b7-86ef6426fc1a",
+        "model": "gpt-5.5"
+      },
+      "human_author": "locdp <locdp@teanis.vn>"
+    }
+  }
+}
