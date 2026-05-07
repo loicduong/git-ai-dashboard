@@ -1,0 +1,12 @@
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.1",
+  "base_commit_sha": "d31cbac5a36ef9003dd0694508899c5f52dc5411",
+  "prompts": {},
+  "humans": {
+    "h_413388cf092a47": {
+      "author": "locdp <locdp@teanis.vn>"
+    }
+  }
+}
