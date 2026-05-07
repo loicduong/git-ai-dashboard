@@ -1,0 +1,23 @@
+test/analytics/aggregations.test.ts
+  s_22a0bf0a55b079::t_2557bced8ab090 1-214
+lib/analytics/ranges.ts
+  s_22a0bf0a55b079::t_6986097baea201 1-27
+lib/analytics/aggregations.ts
+  s_22a0bf0a55b079::t_6986097baea201 1-196
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.1",
+  "base_commit_sha": "f53b7fffeb49cda8f6ca78b6f2a1abc31cffa721",
+  "prompts": {},
+  "sessions": {
+    "s_22a0bf0a55b079": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e00cb-4255-7861-8cd2-0a0a6c509b19",
+        "model": "gpt-5.5"
+      },
+      "human_author": "locdp <locdp@teanis.vn>"
+    }
+  }
+}
