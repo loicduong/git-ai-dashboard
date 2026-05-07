@@ -1,0 +1,20 @@
+app/onboarding/page.tsx
+  s_efa9bbf096fb45::t_a5c9d47411f047 95-98,100-101,103,105-106
+  s_efa9bbf096fb45::t_185786ff39367b 99
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.1",
+  "base_commit_sha": "ec866157d0163c5758b22ec9fe12bb9b0c05c1ea",
+  "prompts": {},
+  "sessions": {
+    "s_efa9bbf096fb45": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e00fb-f987-77f3-86b7-86ef6426fc1a",
+        "model": "gpt-5.5"
+      },
+      "human_author": "locdp <locdp@teanis.vn>"
+    }
+  }
+}
