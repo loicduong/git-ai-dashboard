@@ -1,0 +1,21 @@
+docs/superpowers/specs/2026-05-07-git-ai-dashboard-design.md
+  s_ee0761be485004::t_92fee4be469b5b 1-211
+.gitignore
+  s_ee0761be485004::t_92fee4be469b5b 1-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.1",
+  "base_commit_sha": "e2b966439c5b6b31136349645050b35927dff890",
+  "prompts": {},
+  "sessions": {
+    "s_ee0761be485004": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e0076-18d6-70b0-8d4c-2ae93e673214",
+        "model": "gpt-5.5"
+      },
+      "human_author": "locdp <locdp@teanis.vn>"
+    }
+  }
+}
